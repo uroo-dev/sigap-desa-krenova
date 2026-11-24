@@ -1,15 +1,20 @@
-# SIGAP — Sistem Informasi Geografis dan Aspirasi Publik
+<div align="center">
+  <img src="public/images/logo/sigap.png" alt="Logo SIGAP" width="180" style="border-radius: 20px;" />
 
-[![Laravel 13](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![PHP 8.3+](https://img.shields.io/badge/PHP-8.3%20%7C%208.4%20%7C%208.5-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Leaflet](https://img.shields.io/badge/Leaflet-GIS-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com)
-[![Redis](https://img.shields.io/badge/Redis-Predis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+  # SIGAP
+  ### Sistem Informasi Geografis dan Aspirasi Publik
 
-Platform digital desa terintegrasi untuk **mengenali kondisi wilayah spasial**, **mengelola data kependudukan**, dan **melayani administrasi persuratan desa** dalam satu sistem terpusat.
+  [![Laravel 13](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+  [![PHP 8.3+](https://img.shields.io/badge/PHP-8.3%20%7C%208.4%20%7C%208.5-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+  [![Leaflet](https://img.shields.io/badge/Leaflet-GIS-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com)
+  [![Redis](https://img.shields.io/badge/Redis-Predis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-Dikembangkan untuk ajang **KRENOVA** dengan pendekatan arsitektur bertahap, performa tinggi, ringan, dan mudah dikembangkan secara kolaboratif oleh tim kecil.
+  <p>Platform digital desa terintegrasi untuk <strong>mengenali kondisi wilayah spasial</strong>, <strong>mengelola data kependudukan</strong>, dan <strong>melayani administrasi persuratan desa</strong> dalam satu sistem terpusat.</p>
+
+  <p><em>Dikembangkan untuk ajang <strong>KRENOVA</strong> dengan pendekatan arsitektur bertahap, performa tinggi, ringan, dan mudah dikembangkan secara kolaboratif oleh tim kecil.</em></p>
+</div>
 
 ---
 
