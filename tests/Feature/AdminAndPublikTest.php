@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\LaporanStatus;
 use App\Enums\RoleName;
+use App\Livewire\Admin\UserTable;
 use App\Models\Berita;
 use App\Models\JenisSurat;
 use App\Models\KategoriLaporan;
@@ -14,6 +15,7 @@ use App\Models\Warga;
 use App\Models\Wilayah;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class AdminAndPublikTest extends TestCase
@@ -204,5 +206,77 @@ class AdminAndPublikTest extends TestCase
         $this->assertSame(hash('sha256', '3301010101010002'), $warga->nik_hash);
         $this->assertSame('3301010101010002', $warga->fresh()->nik);
         $this->assertArrayNotHasKey('nik', $warga->toArray());
+    }
+
+    public function test_admin_pages_use_livewire_navigate_and_all_views_render_cleanly(): void
+    {
+        $rt = Wilayah::create(['tipe' => 'rt', 'nama' => 'RT 04', 'kode' => 'RT-04']);
+        $kategori = KategoriLaporan::create(['nama' => 'Penerangan', 'slug' => 'penerangan']);
+        $jenis = JenisSurat::create(['nama' => 'Surat Keterangan Usaha', 'slug' => 'sku']);
+        $berita = Berita::create([
+            'judul' => 'Jadwal Posyandu',
+            'slug' => 'jadwal-posyandu',
+            'isi' => 'Posyandu dilaksanakan pukul 08.00.',
+            'tipe' => 'agenda',
+            'user_id' => $this->admin->id,
+        ]);
+
+        // Halaman Auth
+        $this->get(route('login'))->assertOk()->assertSee('Masuk dengan Google');
+        $this->get(route('register'))->assertOk()->assertSee('Daftar Cepat dengan Google');
+
+        // Halaman Admin mendukung wire:navigate (SPA tanpa reload) & tema Civic Green
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('wire:navigate', false)
+            ->assertSee('#1B5E3B', false)
+            ->assertSee('SigapUI', false);
+
+        $this->actingAs($this->admin)->get(route('admin.users.index'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.users.create'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.users.edit', $this->admin))->assertOk();
+
+        $this->actingAs($this->admin)->get(route('admin.wilayah.index'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.wilayah.create'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.wilayah.edit', $rt))->assertOk();
+
+        $this->actingAs($this->admin)->get(route('admin.kategori-laporan.index'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.kategori-laporan.create'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.kategori-laporan.edit', $kategori))->assertOk();
+
+        $this->actingAs($this->admin)->get(route('admin.jenis-surat.index'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.jenis-surat.create'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.jenis-surat.edit', $jenis))->assertOk();
+
+        $this->actingAs($this->admin)->get(route('admin.berita.index'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.berita.create'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.berita.edit', $berita))->assertOk();
+    }
+
+    public function test_livewire_user_table_supports_live_search_filter_and_toggle_active(): void
+    {
+        $warga = User::factory()->create([
+            'name' => 'Warga Contoh',
+            'email' => 'wargacontoh@sigap.test',
+            'is_active' => true,
+        ]);
+        $warga->assignRole(RoleName::MASYARAKAT->value);
+
+        Livewire::actingAs($this->admin)
+            ->test(UserTable::class)
+            ->assertSee('Warga Contoh')
+            ->set('search', 'Warga Contoh')
+            ->assertSee('wargacontoh@sigap.test')
+            ->assertDontSee('admin@sigap.test')
+            ->set('search', '')
+            ->set('roleFilter', RoleName::MASYARAKAT->value)
+            ->assertSee('Warga Contoh')
+            ->call('toggleActive', $warga->id)
+            ->call('toggleActive', $this->admin->id);
+
+        $this->assertFalse($warga->fresh()->is_active);
+        // Admin tidak boleh menonaktifkan dirinya sendiri
+        $this->assertTrue($this->admin->fresh()->is_active);
     }
 }
