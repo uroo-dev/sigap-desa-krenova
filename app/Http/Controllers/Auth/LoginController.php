@@ -41,7 +41,8 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('dashboard'))
+            ->with('success', 'Selamat datang kembali, '.Auth::user()->name.'!');
     }
 
     public function destroy(Request $request): RedirectResponse
@@ -50,6 +51,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home');
+        return redirect()->route('home')
+            ->with('info', 'Anda telah keluar dari sesi SIGAP.');
     }
 }

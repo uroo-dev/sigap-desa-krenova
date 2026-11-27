@@ -32,6 +32,8 @@ class PengaturanDesaController extends Controller
         ]);
 
         // Penyimpanan persisten ke database/storage akan dilengkapi pada modul Admin Lanjutan
-        return back()->with('success', 'Pengaturan desa diperbarui.');
+        return back()
+            ->with('success', 'Validasi pengaturan identitas desa berhasil.')
+            ->with('info', 'Catatan: Penyimpanan permanen ke database & file logo desa akan aktif pada modul Admin Lanjutan.');
     }
 }

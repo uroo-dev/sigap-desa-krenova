@@ -75,8 +75,12 @@ class WilayahController extends Controller
 
     public function destroy(Wilayah $wilayah): RedirectResponse
     {
-        $wilayah->delete();
+        try {
+            $wilayah->delete();
 
-        return back()->with('success', 'Wilayah dihapus.');
+            return back()->with('success', 'Wilayah berhasil dihapus.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Wilayah tidak dapat dihapus karena masih memiliki data terkait.');
+        }
     }
 }

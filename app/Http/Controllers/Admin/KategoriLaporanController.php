@@ -66,9 +66,13 @@ class KategoriLaporanController extends Controller
 
     public function destroy(KategoriLaporan $kategoriLaporan): RedirectResponse
     {
-        $kategoriLaporan->delete();
+        try {
+            $kategoriLaporan->delete();
 
-        return back()->with('success', 'Kategori dihapus.');
+            return back()->with('success', 'Kategori berhasil dihapus.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh laporan.');
+        }
     }
 
     private function generateUniqueSlug(string $nama, ?int $ignoreId = null): string

@@ -100,8 +100,12 @@ class UserController extends Controller
 
     public function destroy(User $user): RedirectResponse
     {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri.');
+        }
+
         $user->update(['is_active' => false]);
 
-        return back()->with('success', 'Akun dinonaktifkan.');
+        return back()->with('info', 'Akun pengguna dinonaktifkan.');
     }
 }

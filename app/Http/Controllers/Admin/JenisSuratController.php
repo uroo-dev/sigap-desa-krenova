@@ -70,9 +70,13 @@ class JenisSuratController extends Controller
 
     public function destroy(JenisSurat $jenisSurat): RedirectResponse
     {
-        $jenisSurat->delete();
+        try {
+            $jenisSurat->delete();
 
-        return back()->with('success', 'Jenis surat dihapus.');
+            return back()->with('success', 'Jenis surat berhasil dihapus.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Jenis surat tidak dapat dihapus karena masih digunakan oleh pengajuan surat.');
+        }
     }
 
     private function generateUniqueSlug(string $nama, ?int $ignoreId = null): string

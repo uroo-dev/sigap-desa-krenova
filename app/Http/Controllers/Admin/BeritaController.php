@@ -68,6 +68,6 @@ class BeritaController extends Controller
     {
         $berita->delete();
 
-        return back()->with('success', 'Konten dihapus.');
+        return back()->with('success', 'Konten berita berhasil dihapus.');
     }
 }
