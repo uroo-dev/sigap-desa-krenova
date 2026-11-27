@@ -92,6 +92,11 @@
 
     {{-- Konten Utama --}}
     <main class="flex-1">
+        @if (session()->hasAny(['success', 'error', 'warning', 'info']) || $errors->any())
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+                <x-toast />
+            </div>
+        @endif
         @yield('content')
     </main>
 

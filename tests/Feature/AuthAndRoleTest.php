@@ -92,8 +92,21 @@ class AuthAndRoleTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_google_redirect_shows_error_when_oauth_credentials_missing(): void
+    {
+        config()->set('services.google.client_id', null);
+        config()->set('services.google.client_secret', null);
+
+        $response = $this->get(route('auth.google'));
+
+        $response->assertRedirect(route('login'));
+        $response->assertSessionHas('error');
+    }
+
     public function test_google_redirect_points_to_oauth_provider(): void
     {
+        config()->set('services.google.client_id', 'test-client-id');
+        config()->set('services.google.client_secret', 'test-client-secret');
         Socialite::fake('google');
 
         $response = $this->get(route('auth.google'));
@@ -103,6 +116,9 @@ class AuthAndRoleTest extends TestCase
 
     public function test_google_callback_creates_masyarakat_user_and_logs_in(): void
     {
+        config()->set('services.google.client_id', 'test-client-id');
+        config()->set('services.google.client_secret', 'test-client-secret');
+
         $socialiteUser = (new SocialiteUser)->map([
             'id' => 'google-12345',
             'name' => 'Siti Aminah',
@@ -115,6 +131,7 @@ class AuthAndRoleTest extends TestCase
         $response = $this->get(route('auth.google.callback'));
 
         $response->assertRedirect(route('dashboard'));
+        $response->assertSessionHas('success');
         $this->assertAuthenticated();
 
         $user = User::where('google_id', 'google-12345')->first();
@@ -126,6 +143,9 @@ class AuthAndRoleTest extends TestCase
 
     public function test_google_callback_links_existing_email_and_blocks_inactive_user(): void
     {
+        config()->set('services.google.client_id', 'test-client-id');
+        config()->set('services.google.client_secret', 'test-client-secret');
+
         $existing = User::factory()->create([
             'email' => 'existing@gmail.com',
             'google_id' => null,
@@ -144,6 +164,7 @@ class AuthAndRoleTest extends TestCase
         $response = $this->get(route('auth.google.callback'));
 
         $response->assertRedirect(route('login'));
+        $response->assertSessionHas('error');
         $response->assertSessionHasErrors('email');
         $this->assertGuest();
 

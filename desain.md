@@ -226,8 +226,10 @@ Enam pola kartu standar: `Statistic Card`, `Information Card`, `Report Card`, `S
 - **Status Laporan**: *Baru Masuk / Menunggu Verifikasi*, *Diverifikasi RT*, *Ditolak*, *Diajukan ke Kepala Desa*, *Diinstruksikan*, *Dalam Proses*, *Selesai oleh RT*, *Divalidasi Kepala Desa / Selesai*, *Ditinjau Ulang*, *Diarsipkan*.
 - **Status Surat**: *Draf*, *Diajukan / Menunggu Pemeriksaan*, *Diverifikasi RT*, *Ditolak RT*, *Menunggu Persetujuan*, *Disetujui Kepala Desa*, *Ditolak Kepala Desa*, *Diterbitkan / Selesai*, *Dibatalkan*.
 
-### 7.4 Form Elements & Table
-- **Form**: Text input, textarea, select, date picker, file upload (preview sebelum kirim), search input, radio group, checkbox, dan map location picker (Leaflet). Setiap input wajib berlabel jelas, menandai field wajib (`*`), menampilkan pesan validasi tepat di bawah input (`@error`), dan menjaga nilai `old()`.
+### 7.4 Form Elements, Modal CRUD & Alert System
+- **Form**: Text input, textarea, select, date picker, file upload (preview sebelum kirim), search input, radio group, checkbox, dan map location picker (Leaflet). Setiap input wajib berlabel jelas, menandai field wajib (`*`), menampilkan pesan validasi tepat di bawah input (`@error`), dan menjaga nilai `old()` / `wire:model`.
+- **Modal CRUD (Panel Admin)**: Seluruh aksi **Tambah**, **Edit**, dan **Konfirmasi Hapus / Nonaktifkan** di modul master data Admin dijalankan di dalam **Modal Dialog** (`<x-modal>`) berbasis Livewire agar proses administrasi lebih ringkas, fokus, dan bebas perpindahan halaman yang tidak perlu.
+- **Alert & Toast Feedback (`success`, `error`, `warning`, `info`)**: Setiap aksi pengguna (Login, Logout, Register, Google OAuth, Tambah/Ubah/Hapus/Toggle data, maupun kegagalan validasi/konfigurasi) wajib memberikan umpan balik visual yang jelas melalui komponen `<x-toast />` menggunakan warna semantik resmi SIGAP (`#16A34A`, `#DC2626`, `#D97706`, `#2563EB`) — baik via Laravel `session()` maupun event Livewire `sigap-toast`.
 - **Table**: Mendukung pencarian (*search*), filter, pengurutan (*sorting*), pagination, aksi per baris, *empty state* informatif, *loading state*, serta tampilan adaptif **daftar card pada layar mobile**.
 
 ---

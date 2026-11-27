@@ -119,4 +119,13 @@
 
     document.addEventListener('DOMContentLoaded', () => window.SigapUI.init());
     document.addEventListener('livewire:navigated', () => window.SigapUI.init());
+    document.addEventListener('livewire:init', () => {
+        if (window.Livewire) {
+            window.Livewire.hook('morphed', () => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            });
+        }
+    });
 </script>

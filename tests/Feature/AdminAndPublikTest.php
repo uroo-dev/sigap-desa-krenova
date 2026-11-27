@@ -4,7 +4,11 @@ namespace Tests\Feature;
 
 use App\Enums\LaporanStatus;
 use App\Enums\RoleName;
+use App\Livewire\Admin\BeritaTable;
+use App\Livewire\Admin\JenisSuratTable;
+use App\Livewire\Admin\KategoriLaporanTable;
 use App\Livewire\Admin\UserTable;
+use App\Livewire\Admin\WilayahTable;
 use App\Models\Berita;
 use App\Models\JenisSurat;
 use App\Models\KategoriLaporan;
@@ -254,7 +258,7 @@ class AdminAndPublikTest extends TestCase
         $this->actingAs($this->admin)->get(route('admin.berita.edit', $berita))->assertOk();
     }
 
-    public function test_livewire_user_table_supports_live_search_filter_and_toggle_active(): void
+    public function test_livewire_modal_crud_and_alerts_work_across_admin_modules(): void
     {
         $warga = User::factory()->create([
             'name' => 'Warga Contoh',
@@ -263,6 +267,7 @@ class AdminAndPublikTest extends TestCase
         ]);
         $warga->assignRole(RoleName::MASYARAKAT->value);
 
+        // UserTable: Search, Create Modal, Edit Modal, Toggle Confirmation & Toast Alerts
         Livewire::actingAs($this->admin)
             ->test(UserTable::class)
             ->assertSee('Warga Contoh')
@@ -272,11 +277,89 @@ class AdminAndPublikTest extends TestCase
             ->set('search', '')
             ->set('roleFilter', RoleName::MASYARAKAT->value)
             ->assertSee('Warga Contoh')
-            ->call('toggleActive', $warga->id)
-            ->call('toggleActive', $this->admin->id);
+            ->call('openCreateModal')
+            ->assertSet('showFormModal', true)
+            ->set('name', 'Pengguna Modal')
+            ->set('email', 'modal@sigap.test')
+            ->set('role', RoleName::MASYARAKAT->value)
+            ->set('password', 'password123')
+            ->call('save')
+            ->assertSet('showFormModal', false)
+            ->assertDispatched('sigap-toast', type: 'success')
+            ->call('confirmToggleStatus', $warga->id)
+            ->assertSet('showConfirmModal', true)
+            ->call('toggleActiveConfirmed')
+            ->assertDispatched('sigap-toast', type: 'info')
+            ->call('confirmToggleStatus', $this->admin->id)
+            ->assertDispatched('sigap-toast', type: 'error');
 
+        $this->assertDatabaseHas('users', ['email' => 'modal@sigap.test']);
         $this->assertFalse($warga->fresh()->is_active);
-        // Admin tidak boleh menonaktifkan dirinya sendiri
         $this->assertTrue($this->admin->fresh()->is_active);
+
+        // WilayahTable: Modal CRUD
+        Livewire::actingAs($this->admin)
+            ->test(WilayahTable::class)
+            ->call('openCreateModal')
+            ->set('tipe', 'rt')
+            ->set('nama', 'RT 09')
+            ->set('kode', 'RT-09')
+            ->call('save')
+            ->assertDispatched('sigap-toast', type: 'success');
+
+        $rt = Wilayah::where('kode', 'RT-09')->firstOrFail();
+
+        Livewire::actingAs($this->admin)
+            ->test(WilayahTable::class)
+            ->call('confirmDelete', $rt->id)
+            ->call('deleteConfirmed')
+            ->assertDispatched('sigap-toast', type: 'success');
+
+        $this->assertDatabaseMissing('wilayah', ['id' => $rt->id]);
+
+        // KategoriLaporanTable: Modal CRUD + Toggle
+        Livewire::actingAs($this->admin)
+            ->test(KategoriLaporanTable::class)
+            ->call('openCreateModal')
+            ->set('nama', 'Sampah & Kebersihan')
+            ->call('save')
+            ->assertDispatched('sigap-toast', type: 'success');
+
+        $kat = KategoriLaporan::where('slug', 'sampah-kebersihan')->firstOrFail();
+
+        Livewire::actingAs($this->admin)
+            ->test(KategoriLaporanTable::class)
+            ->call('toggleAktif', $kat->id)
+            ->assertDispatched('sigap-toast', type: 'info');
+
+        // JenisSuratTable: Modal CRUD + Dynamic Syarat
+        Livewire::actingAs($this->admin)
+            ->test(JenisSuratTable::class)
+            ->call('openCreateModal')
+            ->set('nama', 'Surat Pengantar SKCK')
+            ->call('addSyarat')
+            ->call('save')
+            ->assertDispatched('sigap-toast', type: 'success');
+
+        $this->assertDatabaseHas('jenis_surat', ['slug' => 'surat-pengantar-skck']);
+
+        // BeritaTable: Modal CRUD (Draf Info Alert & Terbit Success Alert)
+        Livewire::actingAs($this->admin)
+            ->test(BeritaTable::class)
+            ->call('openCreateModal')
+            ->set('judul', 'Rapat Persiapan Krenova')
+            ->set('tipe', 'agenda')
+            ->set('isi', 'Agenda rapat koordinasi.')
+            ->call('save')
+            ->assertDispatched('sigap-toast', type: 'info');
+
+        $berita = Berita::where('judul', 'Rapat Persiapan Krenova')->firstOrFail();
+
+        Livewire::actingAs($this->admin)
+            ->test(BeritaTable::class)
+            ->call('openEditModal', $berita->id)
+            ->set('judul', 'Rapat Persiapan Krenova Final')
+            ->call('save')
+            ->assertDispatched('sigap-toast', type: 'success');
     }
 }
